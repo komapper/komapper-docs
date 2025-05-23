@@ -97,7 +97,7 @@ archived_version = false #can_be_replaced_with_gradle
 # The version number for the version of the docs represented in this doc set.
 # Used in the "version-banner" partial to display a version number for the 
 # current doc set.
-version = "v5.2" #can_be_replaced_with_gradle
+version = "v5.3" #can_be_replaced_with_gradle
 
 # A link to latest version of the docs. Used in the "version-banner" partial to
 # point people to the main doc site.
@@ -113,7 +113,7 @@ github_project_repo = "https://github.com/komapper/komapper"
 
 # Uncomment this if you have a newer GitHub repo with "main" as the default branch,
 # or specify a new value if you want to reference another branch in your GitHub links
-github_branch = "v5.2" #can_be_replaced_with_gradle
+github_branch = "v5.3" #can_be_replaced_with_gradle
 
 # Google Custom Search Engine ID. Remove or comment out to disable search.
 # gcs_engine_id = "c4b340a784facde3d"
@@ -132,8 +132,11 @@ prism_syntax_highlighting = false
 #version = "latest"
 #url = "https://www.komapper.org/"
 [[params.versions]]
-version = "v5.2"
+version = "v5.3"
 url = "https://www.komapper.org/"
+[[params.versions]]
+version = "v5.2"
+url = "https://v5-2.komapper.org/"
 [[params.versions]]
 version = "v5.1"
 url = "https://v5-1.komapper.org/"
