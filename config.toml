@@ -92,7 +92,7 @@ version_menu = "Releases"
 # Flag used in the "version-banner" partial to decide whether to display a 
 # banner on every page indicating that this is an archived version of the docs.
 # Set this flag to "true" if you want to display the banner.
-archived_version = false #can_be_replaced_with_gradle
+archived_version = true #can_be_replaced_with_gradle
 
 # The version number for the version of the docs represented in this doc set.
 # Used in the "version-banner" partial to display a version number for the 
@@ -119,21 +119,21 @@ github_branch = "v5.2" #can_be_replaced_with_gradle
 # gcs_engine_id = "c4b340a784facde3d"
 
 # Enable Algolia DocSearch
-algolia_docsearch = true #can_be_replaced_with_gradle
+algolia_docsearch = false #can_be_replaced_with_gradle
 
 # Enable Lunr.js offline search
-offlineSearch = false #can_be_replaced_with_gradle
+offlineSearch = true #can_be_replaced_with_gradle
 
 # Enable syntax highlighting and copy buttons on code blocks with Prism
 prism_syntax_highlighting = false
 
 # Add your release versions here
-#[[params.versions]]
-#version = "latest"
-#url = "https://www.komapper.org/"
+[[params.versions]]
+version = "latest"
+url = "https://www.komapper.org/"
 [[params.versions]]
 version = "v5.2"
-url = "https://www.komapper.org/"
+url = "https://v5-2.komapper.org/"
 [[params.versions]]
 version = "v5.1"
 url = "https://v5-1.komapper.org/"
