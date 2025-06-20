@@ -11,3 +11,4 @@ tech-doc-hugo
 build
 
 /.hugo_build.lock
+/.claude/
