@@ -1,0 +1,53 @@
+# Komapper
+
+> Komapper is a type-safe ORM library for server-side Kotlin, supporting both JDBC and R2DBC with compile-time code generation via Kotlin Symbol Processing (KSP) API.
+
+Komapper provides a modern approach to database access in Kotlin applications. It features a type-safe query DSL, immutable queries, and native support for Kotlin features like value classes and coroutines. The library offers nearly identical APIs for both blocking (JDBC) and reactive (R2DBC) database access.
+
+## Docs
+
+- [Overview](https://www.komapper.org/docs/overview/): Introduction to Komapper's features and philosophy
+- [Quickstart](https://www.komapper.org/docs/quickstart/): Getting started guide with minimal setup
+- [Examples](https://www.komapper.org/docs/examples/): Sample applications demonstrating various use cases
+- [Reference](https://www.komapper.org/docs/reference/): Comprehensive API documentation
+
+## Core Concepts
+
+- [Annotation Processing](https://www.komapper.org/docs/reference/annotation-processing/): KSP configuration and code generation
+- [Entity Classes](https://www.komapper.org/docs/reference/entity-class/): Map Kotlin classes to database tables
+- [Data Types](https://www.komapper.org/docs/reference/data-type/): Property to column type mapping
+- [Associations](https://www.komapper.org/docs/reference/association/): Define entity relationships
+
+## Database Operations
+
+- [Database Config](https://www.komapper.org/docs/reference/database-config/): Connection configuration
+- [Database](https://www.komapper.org/docs/reference/database/): Core database abstraction
+- [Dialects](https://www.komapper.org/docs/reference/dialect/): Database-specific features
+- [Transactions](https://www.komapper.org/docs/reference/transaction/): Transaction management
+- [Logging](https://www.komapper.org/docs/reference/logging/): Query and transaction logging
+
+## Query System
+
+- [Query Introduction](https://www.komapper.org/docs/reference/query/introduction/): Query system overview
+- [QueryDsl](https://www.komapper.org/docs/reference/query/querydsl/): Type-safe query building API
+- [SELECT](https://www.komapper.org/docs/reference/query/querydsl/select/): Fetch data with joins and pagination
+- [INSERT](https://www.komapper.org/docs/reference/query/querydsl/insert/): Add single or batch records
+- [UPDATE](https://www.komapper.org/docs/reference/query/querydsl/update/): Modify existing records
+- [DELETE](https://www.komapper.org/docs/reference/query/querydsl/delete/): Remove records
+- [Expression](https://www.komapper.org/docs/reference/query/querydsl/expression/): Build SQL expressions
+- [Template](https://www.komapper.org/docs/reference/query/querydsl/template/): SQL templates with parameters
+- [Script](https://www.komapper.org/docs/reference/query/querydsl/script/): Execute SQL scripts
+- [Schema](https://www.komapper.org/docs/reference/query/querydsl/schema/): DDL operations
+- [Command](https://www.komapper.org/docs/reference/query/querydsl/command/): Low-level SQL execution
+- [Builder](https://www.komapper.org/docs/reference/query/querydsl/builder/): Advanced query building
+- [Query Composition](https://www.komapper.org/docs/reference/query/composition/): Combine and reuse queries
+- [Query Debugging](https://www.komapper.org/docs/reference/query/debugging/): Debugging tools
+
+## Integration
+
+- [Spring Boot Starter](https://www.komapper.org/docs/reference/starter/): Auto-configuration for Spring Boot
+- [Gradle Plugin](https://www.komapper.org/docs/reference/gradle-plugin/): Generate entities from database schemas
+
+## Optional
+
+- [GitHub Repository](https://github.com/komapper/komapper): Source code and issue tracking
