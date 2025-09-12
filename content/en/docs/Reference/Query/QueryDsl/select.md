@@ -171,6 +171,24 @@ select t0_.ADDRESS_ID, t0_.STREET, t0_.VERSION from ADDRESS as t0_ left outer jo
 */
 ```
 
+## fullJoin
+
+To perform a FULL OUTER JOIN, call the `fullJoin` function:
+
+```kotlin
+val query: Query<List<Pair<String?, String?>>> =
+    QueryDsl.from(a).fullJoin(e) { a.addressId eq e.addressId }.select(a.street, e.employeeName)
+/*
+select t0_.STREET, t1_.EMPLOYEE_NAME from ADDRESS as t0_ full outer join EMPLOYEE as t1_ on (t0_.ADDRESS_ID = t1_.ADDRESS_ID)
+*/
+```
+
+{{< alert color="warning" title="Warning" >}}
+If the [Dialect]({{< relref "../../dialect.md" >}}) you are using does not support FULL OUTER JOIN (e.g., H2, MariaDB, MySQL),
+`UnsupportedOperationException` will be thrown when executing the query.
+FULL OUTER JOIN is supported by PostgreSQL, Oracle, and SQL Server.
+{{< /alert >}}
+
 ## forUpdate
 
 To specify a FOR UPDATE clause, call the `forUpdate` function:

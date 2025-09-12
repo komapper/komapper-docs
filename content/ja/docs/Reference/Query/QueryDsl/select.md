@@ -171,6 +171,24 @@ select t0_.ADDRESS_ID, t0_.STREET, t0_.VERSION from ADDRESS as t0_ left outer jo
 */
 ```
 
+## fullJoin
+
+FULL OUTER JOINを行う場合は`fullJoin`を呼び出します。
+
+```kotlin
+val query: Query<List<Pair<String?, String?>>> =
+    QueryDsl.from(a).fullJoin(e) { a.addressId eq e.addressId }.select(a.street, e.employeeName)
+/*
+select t0_.STREET, t1_.EMPLOYEE_NAME from ADDRESS as t0_ full outer join EMPLOYEE as t1_ on (t0_.ADDRESS_ID = t1_.ADDRESS_ID)
+*/
+```
+
+{{< alert color="warning" title="Warning" >}}
+利用している [ダイアレクト]({{< relref "../../dialect.md" >}}) がFULL OUTER JOINをサポートしない場合（H2、MariaDB、MySQL等）、
+クエリの実行時に`UnsupportedOperationException`がスローされます。
+FULL OUTER JOINはPostgreSQL、Oracle、SQL Serverでサポートされています。
+{{< /alert >}}
+
 ## forUpdate
 
 FOR UPDATE句を指定する場合は`forUpdate`を呼び出します。
