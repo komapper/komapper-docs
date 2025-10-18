@@ -72,6 +72,7 @@ data class Address(
   @KomapperAutoIncrement
   @KomapperColumn(name = "ADDRESS_ID")
   val id: Int = 0,
+  @KomapperColumn(length = 500)
   val street: String,
   @KomapperVersion
   val version: Int = 0,
@@ -559,13 +560,37 @@ Enum型のプロパティに対して`@KomapperEnum`を指定しない場合、
 プロパティとマッピングするカラムの名前を明示的に指定します。
 
 ```kotlin
-@KomapperColumn(name = "ADDRESS_ID", alwaysQuote = true, masking = true)
+@KomapperColumn(name = "ADDRESS_ID", alwaysQuote = true, masking = true, length = 255, precision = 10, scale = 2)
 val id: Nothing
 ```
 
 `alwaysQuote`プロパティに`true`を設定すると生成されるSQLの識別子が引用符で囲まれます。
 
 `masking`プロパティに`true`を設定すると、 ログの中で対応するデータがマスキングされます。
+
+`length`プロパティは文字列型やバイナリ型のカラム（VARCHAR、CHAR、BINARYなど）の最大長を指定します。
+
+`precision`プロパティは数値型のカラム（DECIMAL、NUMERICなど）の最大桁数を指定します。
+
+`scale`プロパティは数値型のカラム（DECIMAL、NUMERICなど）の小数点以下の桁数を指定します。
+
+実用的な例：
+
+```kotlin
+@KomapperEntity
+data class Product(
+    @KomapperId
+    val id: Int,
+    @KomapperColumn(length = 255)
+    val name: String,
+    @KomapperColumn(precision = 10, scale = 2)
+    val price: BigDecimal,
+    @KomapperColumn(length = 1000)
+    val description: String?
+)
+```
+
+これにより、データベースの方言に応じた適切なカラム制約を持つDDLが生成されます。
 
 `updatable` プロパティが `false` に設定されている場合、そのカラムは、明示的に `set {}` ブロックが指定されていない限り、[`update()`]({{< relref "Query/QueryDsl/update" >}}) および [`insert().onDuplicateKeyUpdate()`]({{< relref "Query/QueryDsl/insert#onduplicatekeyupdate" >}}) DSL によって生成されるデフォルトの `UPDATE` 文から除外されます。
 
