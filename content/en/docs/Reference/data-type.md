@@ -36,6 +36,7 @@ package example.jdbc
 import example.Age
 import org.komapper.jdbc.spi.JdbcUserDefinedDataType
 import java.sql.JDBCType
+import java.sql.SQLType
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 import kotlin.reflect.KClass
@@ -47,7 +48,7 @@ class AgeType : JdbcUserDefinedDataType<Age> {
 
     override val type: KType = typeOf<Age>()
 
-    override val jdbcType: JDBCType = JDBCType.INTEGER
+    override val sqlType: SQLType = JDBCType.INTEGER
 
     override fun getValue(rs: ResultSet, index: Int): Age {
         return Age(rs.getInt(index))
@@ -93,6 +94,8 @@ import io.r2dbc.spi.Statement
 import org.komapper.r2dbc.spi.R2dbcUserDefinedDataType
 import kotlin.reflect.KClass
 import kotlin.reflect.typeOf
+import java.sql.JDBCType
+import java.sql.SQLType
 
 class AgeType : R2dbcUserDefinedDataType<Age> {
 
@@ -101,6 +104,8 @@ class AgeType : R2dbcUserDefinedDataType<Age> {
     override val type: KType = typeOf<Age>()
 
     override val r2dbcType: Class<Int> = Int::class.javaObjectType
+
+    override val sqlType: SQLType = JDBCType.INTEGER
 
     override fun getValue(row: Row, index: Int): Age? {
         return row.get(index, Int::class.javaObjectType)?.let { Age(it) }
@@ -111,12 +116,12 @@ class AgeType : R2dbcUserDefinedDataType<Age> {
     }
 
     override fun setValue(statement: Statement, index: Int, value: Age) {
-        // 第二引数はr2dbcTypeプロパティと同じ型でなければいけません
+        // The second argument must be of the same type as the r2dbcType property
         statement.bind(index, value.value)
     }
 
     override fun setValue(statement: Statement, name: String, value: Age) {
-        // 第二引数はr2dbcTypeプロパティと同じ型でなければいけません
+        // The second argument must be of the same type as the r2dbcType property
         statement.bind(name, value.value)
     }
 
