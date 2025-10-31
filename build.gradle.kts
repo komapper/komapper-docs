@@ -42,7 +42,7 @@ tasks {
     register("updateVersion") {
         doLast {
             replaceVersion(kotlinVersion, """kotlin\("jvm"\) version """")
-            replaceVersion("$kotlinVersion-$kspVersion", """id\("com.google.devtools.ksp"\) version """")
+            replaceVersion(kspVersion, """id\("com.google.devtools.ksp"\) version """")
             replaceVersion(komapperVersion, """val komapperVersion = """")
             replaceVersion(komapperVersion, """id\("org.komapper.gradle"\) version """")
             changeConfig("version", "\".*\"", "\"$branchName\"")
