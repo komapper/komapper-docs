@@ -910,10 +910,18 @@ These functions are defined in `org.komapper.core.dsl.operator`.
 
 The `literal` function supports the following argument types:
 
+- BigDecimal
 - Boolean
+- Double
+- Enum
 - Int
+- LocalDate
+- LocalDateTime
+- LocalTime
 - Long
+- OffsetDateTime
 - String
+- User-defined types
 
 Here is an example of literal function usage:
 

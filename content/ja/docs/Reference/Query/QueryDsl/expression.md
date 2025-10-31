@@ -906,10 +906,18 @@ select t0_.department_name, (select count(*) from employee as t1_ where t0_.depa
 
 `literal`関数がサポートする引数の型は以下のものです。
 
+- BigDecimal
 - Boolean
+- Double
+- Enum
 - Int
+- LocalDate
+- LocalDateTime
+- LocalTime
 - Long
+- OffsetDateTime
 - String
+- User-defined types
 
 使用例です。
 
