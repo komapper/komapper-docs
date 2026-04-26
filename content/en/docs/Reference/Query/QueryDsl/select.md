@@ -110,6 +110,64 @@ data class EmployeeRank(
 )
 ```
 
+## values
+
+To build a `VALUES` table value constructor, call `QueryDsl.values`.
+The result is a `SubqueryExpression` that can be passed to any function that accepts a subquery,
+most notably `from(metamodel, subquery)` and `with(metamodel, subquery)`.
+The entity metamodel must correspond to the columns produced by `values`.
+
+The following example uses `values` as a derived table:
+
+```kotlin
+val t = Meta.t
+
+val rows = QueryDsl.values(t) {
+    row { t.n eq 1 }
+    row { t.n eq 2 }
+    row { t.n eq 3 }
+}
+
+val query = QueryDsl.from(t, rows).where { t.n greater 1 }.orderBy(t.n)
+/*
+select t0_.n from (values (?), (?), (?)) as t0_ (n) where t0_.n > ? order by t0_.n asc
+*/
+```
+
+The following example uses `values` as the body of a CTE:
+
+```kotlin
+val t = Meta.t
+
+val rows = QueryDsl.values(t) {
+    row { t.n eq 1 }
+    row { t.n eq 2 }
+    row { t.n eq 3 }
+}
+
+val query = QueryDsl.with(t, rows).from(t).orderBy(t.n).select(t.n)
+/*
+with t (n) as (values (?), (?), (?)) select t0_.n from t as t0_ order by t0_.n asc
+*/
+```
+
+The entity definition corresponding to the above `Meta.t` is as follows:
+
+```kotlin
+@KomapperEntity
+data class T(
+    @KomapperId(virtual = true)
+    val n: Int,
+)
+```
+
+The generated SQL varies by dialect:
+
+- MySQL 8 emits `VALUES ROW(...)`.
+- MariaDB and MySQL 5 fall back to `SELECT ... UNION ALL ...`.
+- SQL Server wraps the `VALUES` in `SELECT ... FROM (VALUES ...)` when used as a CTE body.
+- MySQL 5 does not support CTEs at all, so `with(metamodel, values)` is unavailable.
+
 ## withRecursive
 
 To specify a WITH RECURSIVE clause, call `withRecursive`.
@@ -665,6 +723,9 @@ escapeSequence
 
 fetchSize
 : Default is `null` to indicate that the driver value should be used.
+
+hint
+: SQL hint embedded as a comment immediately after the `SELECT` keyword. Default is `null`. Useful for engines that read query configuration from comments, such as StarRocks (e.g. `SET_VAR(query_timeout=3600)`).
 
 maxRows
 : Default is `null` to indicate use of the driver's value.

@@ -110,6 +110,63 @@ data class EmployeeRank(
 )
 ```
 
+## values
+
+`VALUES`テーブル値コンストラクタを構築する場合は`QueryDsl.values`を呼び出します。
+戻り値はサブクエリを受け付ける任意の関数（特に`from(metamodel, subquery)`や`with(metamodel, subquery)`）に渡せる`SubqueryExpression`です。
+エンティティメタモデルは`values`が生成する列に対応していなければいけません。
+
+次の例は`values`を派生テーブルとして利用する例です。
+
+```kotlin
+val t = Meta.t
+
+val rows = QueryDsl.values(t) {
+    row { t.n eq 1 }
+    row { t.n eq 2 }
+    row { t.n eq 3 }
+}
+
+val query = QueryDsl.from(t, rows).where { t.n greater 1 }.orderBy(t.n)
+/*
+select t0_.n from (values (?), (?), (?)) as t0_ (n) where t0_.n > ? order by t0_.n asc
+*/
+```
+
+次の例は`values`をCTEのボディとして利用する例です。
+
+```kotlin
+val t = Meta.t
+
+val rows = QueryDsl.values(t) {
+    row { t.n eq 1 }
+    row { t.n eq 2 }
+    row { t.n eq 3 }
+}
+
+val query = QueryDsl.with(t, rows).from(t).orderBy(t.n).select(t.n)
+/*
+with t (n) as (values (?), (?), (?)) select t0_.n from t as t0_ order by t0_.n asc
+*/
+```
+
+上述の`Meta.t`に対応するエンティティ定義は次の通りです。
+
+```kotlin
+@KomapperEntity
+data class T(
+    @KomapperId(virtual = true)
+    val n: Int,
+)
+```
+
+生成されるSQLはダイアレクトによって異なります。
+
+- MySQL 8では`VALUES ROW(...)`を出力します。
+- MariaDBとMySQL 5では`SELECT ... UNION ALL ...`にフォールバックします。
+- SQL ServerでCTEのボディとして使う場合は`VALUES`を`SELECT ... FROM (VALUES ...)`でラップします。
+- MySQL 5はCTEをサポートしないため、`with(metamodel, values)`は利用できません。
+
 ## withRecursive
 
 WITH RECURSIVE句を指定する場合は`withRecursive`を呼び出します。
@@ -665,6 +722,9 @@ escapeSequence
 
 fetchSize
 : フェッチサイズです。デフォルトは`null`でドライバの値を使うことを示します。
+
+hint
+: `SELECT`キーワード直後にコメントとして埋め込まれるSQLヒントです。デフォルトは`null`です。StarRocksのようにコメントからクエリの設定を読み取るエンジンで利用できます（例: `SET_VAR(query_timeout=3600)`）。
 
 maxRows
 : 最大行数です。デフォルトは`null`でドライバの値を使うことを示します。

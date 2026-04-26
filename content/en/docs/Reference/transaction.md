@@ -110,6 +110,31 @@ db.withTransaction { tx ->
 }
 ```
 
+### Inspecting the current transaction {#inspecting-current-transaction}
+
+The `isActive` function returns `true` while the code is executing inside a transaction block, and `false` otherwise.
+This is useful for code paths that may be invoked both inside and outside of a transactional context.
+
+```kotlin
+db.withTransaction { tx ->
+    ..
+    if (tx.isActive()) {
+        ..
+    }
+    ..
+}
+```
+
+The `transactionProperty` property exposes the combined `TransactionProperty` of the current transaction.
+The value reflects the property merged through nested `required` and `requiresNew` calls.
+
+```kotlin
+db.withTransaction(transactionProperty = TransactionProperty.Name("myTx")) { tx ->
+    val name: String? = tx.transactionProperty[TransactionProperty.Name]?.value
+    ..
+}
+```
+
 ### Beginning and ending new transactions {#beginning-and-ending-new-transaction}
 
 To begin a new transaction when the current transaction exists, call the `requiresNew` function.

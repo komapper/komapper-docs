@@ -107,6 +107,31 @@ db.withTransaction { tx ->
 }
 ```
 
+### 現在のトランザクションの参照 {#inspecting-current-transaction}
+
+`isActive`関数はトランザクションブロックの内側で実行されている間は`true`を、外側では`false`を返します。
+トランザクションの内外どちらからも呼び出される可能性があるコードで利用できます。
+
+```kotlin
+db.withTransaction { tx ->
+    ..
+    if (tx.isActive()) {
+        ..
+    }
+    ..
+}
+```
+
+`transactionProperty`プロパティは現在のトランザクションに適用されている`TransactionProperty`を返します。
+`required`や`requiresNew`をネストして呼び出した場合、それらをマージした結果が反映されます。
+
+```kotlin
+db.withTransaction(transactionProperty = TransactionProperty.Name("myTx")) { tx ->
+    val name: String? = tx.transactionProperty[TransactionProperty.Name]?.value
+    ..
+}
+```
+
 ### 新規トランザクションの開始と終了 {#beginning-and-ending-new-transaction}
 
 すでに開始されたトランザクションの中で別のトランザクションを新しく開始するには`requiresNew`関数を呼び出します。
