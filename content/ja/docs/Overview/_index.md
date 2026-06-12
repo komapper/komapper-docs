@@ -9,7 +9,7 @@ description: >
 ## Komapperとは？ {#what-is-it}
 
 KomapperはサーバーサイドKotlinのためのORMライブラリーです。
-Kotlinの 1.5.31 以上をサポートします。
+Kotlinの 2.3.21 以上をサポートします。動作にはJREの 17 以上が必要です。
 
 Komapperにはいくつかの強みがあります。
 

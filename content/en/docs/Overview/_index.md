@@ -9,7 +9,7 @@ description: >
 ## What is it? {#what-is-it}
 
 Komapper is an ORM library for server-side Kotlin.
-Komapper supports Kotlin 1.5.31 or later.
+Komapper supports Kotlin 2.3.21 or later and requires JRE 17 or later.
 
 Komapper has several strengths as follows:
 

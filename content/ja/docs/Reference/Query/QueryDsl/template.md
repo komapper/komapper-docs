@@ -450,6 +450,11 @@ where
 /*% end */
 ```
 
+`&&` と `||` はKotlinと同様に短絡評価されます。
+つまり、`&&` は左オペランドが `false` の場合に右オペランドを評価せず、
+`||` は左オペランドが `true` の場合に右オペランドを評価しません。
+上記の例では、`name != null` が `false` の場合、`name.length > 0` は評価されません。
+
 #### プロパティアクセス {#sql-template-expression-property-access}
 
 `.`や`?.`を使ってプロパティにアクセスできます。`?.`はKotlinのsafe call operatorと同じ挙動をします。
