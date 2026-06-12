@@ -56,15 +56,19 @@ Releases a new version of https://www.komapper.org/ following the process descri
 
 1. `netlify api getSite --data '{"site_id": "..."}'` — note `build_settings.repo_branch`
    (should be `OLD_BRANCH`) and `build_settings.allowed_branches`.
-2. Update: set `repo_branch` to `NEW_BRANCH` and make sure `OLD_BRANCH` is in `allowed_branches`
-   (so its subdomain keeps deploying as a branch deploy):
+2. Update `repo_branch` to `NEW_BRANCH`:
 
    ```
-   netlify api updateSite --data '{"site_id": "...", "body": {"build_settings": {"repo_branch": "v6.2", "allowed_branches": [..existing.., "v6.1"]}}}'
+   netlify api updateSite --data '{"site_id": "...", "body": {"build_settings": {"repo_branch": "v6.2"}}}'
    ```
 
+   About `allowed_branches`: an EMPTY list means ALL branches get branch deploys — this is
+   the current configuration (verified June 2026). In that case do NOT touch `allowed_branches`;
+   setting it to a non-empty list would restrict branch deploys to only the listed branches and
+   break the builds of the other version subdomains. Only if the list is already non-empty,
+   make sure `OLD_BRANCH` is included in it.
 3. Verify with `getSite` that the values actually changed. If the `build_settings` shape is
-   rejected or has no effect, retry with `{"body": {"repo": {"repo_branch": ..., "allowed_branches": [...]}}}`.
+   rejected or has no effect, retry with `{"body": {"repo": {"repo_branch": ...}}}`.
 4. If the API does not work, tell the user to do it in the Netlify UI:
    Site configuration → Build & deploy → Continuous deployment → Branches and deploy contexts.
 
@@ -80,10 +84,14 @@ Releases a new version of https://www.komapper.org/ following the process descri
 
 ## 6. Old-version subdomain
 
-- After the `OLD_BRANCH` branch deploy finishes, check whether `https://OLD_SUBDOMAIN/` resolves.
-- If Netlify "automatic deploy subdomains" is enabled for branch deploys, this works without
-  further action. Otherwise the user must add it manually in the Netlify UI:
-  Domain management → Branch subdomains → add `OLD_SUBDOMAIN` for branch `OLD_BRANCH`.
+- Automatic deploy subdomains are enabled (`branch_deploy_custom_domain = "komapper.org"`,
+  verified June 2026): every branch deploy is served at `<branch-slug>.komapper.org`, and
+  branch `v6.1` slugifies to `v6-1`, matching the URL scheme used in `config.toml`.
+  So no action is needed — just check that `https://OLD_SUBDOMAIN/` resolves after the
+  `OLD_BRANCH` branch deploy finishes.
+- Fallback if `branch_deploy_custom_domain` is no longer set: the user must add the subdomain
+  manually in the Netlify UI: Domain management → Branch subdomains → add `OLD_SUBDOMAIN`
+  for branch `OLD_BRANCH`.
 
 ## 7. Verify end to end
 
