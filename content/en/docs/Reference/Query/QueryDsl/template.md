@@ -484,6 +484,11 @@ These can be used as follows:
 /*% end */
 ```
 
+The `&&` and `||` operators are evaluated using short-circuit semantics, just like in Kotlin.
+That is, `&&` does not evaluate the right operand when the left operand is `false`,
+and `||` does not evaluate the right operand when the left operand is `true`.
+In the above example, `name.length > 0` is not evaluated when `name != null` is `false`.
+
 #### Property accesses {#sql-template-expression-property-access}
 
 To access properties, use `.` or `?.` as follows:
