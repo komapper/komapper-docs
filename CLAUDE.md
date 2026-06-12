@@ -16,7 +16,8 @@ docker compose up
 
 # Version management
 ./gradlew updateVersion          # Update version numbers across documentation
-./gradlew archive               # Archive current version for release
+./gradlew prepareRelease         # updateVersion + update the version list in config.toml
+./gradlew archive               # Archive current version (config flags + version list)
 ./gradlew debug                 # Show current branch name
 
 # Direct Hugo (requires local Hugo installation)
@@ -34,9 +35,10 @@ hugo server --buildDrafts      # Include draft content
 
 ### Version Management System
 The project maintains multiple versions with sophisticated automation:
-- Version numbers defined in `gradle.properties` (currently Kotlin 2.1.21, KSP 2.0.1, Komapper 5.3.0)
+- Version numbers defined in `gradle.properties` (Kotlin, KSP, Komapper)
 - `updateVersion` task automatically updates version references across documentation
-- Each version gets its own branch and subdomain (e.g., v5-2.komapper.org)
+- `prepareRelease` task additionally maintains the `[[params.versions]]` list in `config.toml`
+- Each version gets its own branch and subdomain (e.g., v6-0.komapper.org)
 
 ### Content Structure
 ```
@@ -47,17 +49,19 @@ content/
 
 ## Release Process
 
+The release is automated by the `release` skill (`.claude/skills/release/SKILL.md`):
+run `/release <komapper-version>`. The underlying steps are:
+
 ### Main Branch Release
 1. Update version numbers in `gradle.properties`
-2. Run `./gradlew updateVersion`
-3. Update version URLs in `config.toml`
-4. Create new branch from main
-5. Configure Netlify for new branch
+2. Run `./gradlew prepareRelease` (also updates the version list in `config.toml`)
+3. Commit, create new branch from main, push both
+4. Switch the Netlify production branch to the new branch
 
 ### Archive Old Version
-1. In old branch, run `./gradlew archive`
-2. Update URLs in `config.toml`
-3. Create subdomain on Netlify
+1. In old branch, run `./gradlew archive` (also updates the version list in `config.toml`)
+2. Commit and push
+3. Create subdomain on Netlify (unless automatic deploy subdomains are enabled)
 
 ## Important Files
 

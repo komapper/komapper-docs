@@ -38,6 +38,51 @@ fun changeConfig(key :String, old: String, new: String) {
     }
 }
 
+val latestUrl = "https://www.komapper.org/"
+
+fun subdomainUrl(version: String) = "https://" + version.replace('.', '-') + ".komapper.org/"
+
+fun versionEntry(version: String, url: String) =
+    "[[params.versions]]\nversion = \"$version\"\nurl = \"$url\""
+
+// Insert the new version at the top of the [[params.versions]] list and
+// move the previous latest version to its own subdomain URL.
+fun addVersionToList() {
+    val configFile = file("config.toml")
+    val text = configFile.readText(charset(encoding))
+    val latestEntry = Regex("""(?<!#)\[\[params\.versions]]\nversion = "(v[^"]+)"\nurl = "https://www\.komapper\.org/"""")
+    val match = latestEntry.find(text)
+        ?: throw GradleException("Latest version entry not found in config.toml")
+    val previousVersion = match.groupValues[1]
+    if (previousVersion == branchName) {
+        println("config.toml already lists $branchName as the latest version")
+        return
+    }
+    val replacement = versionEntry(branchName, latestUrl) + "\n" +
+            versionEntry(previousVersion, subdomainUrl(previousVersion))
+    configFile.writeText(text.replaceRange(match.range, replacement), charset(encoding))
+    println("config.toml: added $branchName, moved $previousVersion to ${subdomainUrl(previousVersion)}")
+}
+
+// Uncomment the "latest" entry and point this branch's version to its subdomain URL.
+fun archiveVersionList() {
+    val configFile = file("config.toml")
+    val text = configFile.readText(charset(encoding))
+    val newText = text
+        .replace(
+            "#[[params.versions]]\n#version = \"latest\"\n#url = \"$latestUrl\"",
+            versionEntry("latest", latestUrl))
+        .replace(
+            versionEntry(branchName, latestUrl),
+            versionEntry(branchName, subdomainUrl(branchName)))
+    if (newText == text) {
+        println("config.toml: version list already archived")
+    } else {
+        configFile.writeText(newText, charset(encoding))
+        println("config.toml: enabled latest entry, moved $branchName to ${subdomainUrl(branchName)}")
+    }
+}
+
 tasks {
     register("updateVersion") {
         doLast {
@@ -50,11 +95,19 @@ tasks {
         }
     }
 
+    register("prepareRelease") {
+        dependsOn("updateVersion")
+        doLast {
+            addVersionToList()
+        }
+    }
+
     register("archive") {
         doLast {
             changeConfig("archived_version", "false", "true")
             changeConfig("algolia_docsearch", "true", "false")
             changeConfig("offlineSearch", "false", "true")
+            archiveVersionList()
         }
     }
 
