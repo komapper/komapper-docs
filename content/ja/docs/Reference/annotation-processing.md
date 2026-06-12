@@ -14,12 +14,12 @@ KSPを実行するためには、Gradleビルドスクリプトを次のよう�
 
 ```kotlin
 plugins {
-  id("com.google.devtools.ksp") version "2.3.7"
-  kotlin("jvm") version "2.3.21"
+  id("com.google.devtools.ksp") version "2.3.9"
+  kotlin("jvm") version "2.4.0"
 }
 
 dependencies {
-  val komapperVersion = "6.1.0"
+  val komapperVersion = "7.0.0"
   ksp("org.komapper:komapper-processor:$komapperVersion")
 }
 ```
