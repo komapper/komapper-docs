@@ -56,19 +56,31 @@ Releases a new version of https://www.komapper.org/ following the process descri
 
 1. `netlify api getSite --data '{"site_id": "..."}'` — note `build_settings.repo_branch`
    (should be `OLD_BRANCH`) and `build_settings.allowed_branches`.
-2. Update `repo_branch` to `NEW_BRANCH`:
+2. Update `repo_branch` to `NEW_BRANCH` by sending the FULL repo payload
+   (the only shape that works — verified during the v7.0 release, June 2026):
 
    ```
-   netlify api updateSite --data '{"site_id": "...", "body": {"build_settings": {"repo_branch": "v6.2"}}}'
+   netlify api updateSite --data '{"site_id": "ec21695f-242f-43af-8a30-2d13a84f0637", "body": {"repo": {"provider": "github", "installation_id": 19700619, "repo_path": "komapper/komapper-docs", "repo_url": "https://github.com/komapper/komapper-docs", "repo_branch": "<NEW_BRANCH>", "allowed_branches": [], "cmd": "cd themes/docsy && git submodule update -f --init && cd ../.. && hugo", "dir": "public"}}}'
    ```
 
-   About `allowed_branches`: an EMPTY list means ALL branches get branch deploys — this is
-   the current configuration (verified June 2026). In that case do NOT touch `allowed_branches`;
-   setting it to a non-empty list would restrict branch deploys to only the listed branches and
-   break the builds of the other version subdomains. Only if the list is already non-empty,
-   make sure `OLD_BRANCH` is included in it.
-3. Verify with `getSite` that the values actually changed. If the `build_settings` shape is
-   rejected or has no effect, retry with `{"body": {"repo": {"repo_branch": ...}}}`.
+   Shapes that do NOT work (both tried during the v7.0 release):
+   - `{"body": {"build_settings": {"repo_branch": ...}}}` — returns 200 but is silently
+     ignored by Netlify.
+   - `{"body": {"repo": {"repo_branch": ...}}}` with only `repo_branch` — rejected with
+     422 Unprocessable Entity.
+
+   CRITICAL — `allowed_branches` must be passed explicitly as `[]` in the payload.
+   If it is omitted, Netlify resets it to `[<repo_branch>]`, which restricts branch deploys
+   to only the production branch and breaks the old-version subdomain builds. An EMPTY list
+   means ALL branches get branch deploys — this is the current configuration (verified
+   June 2026). Never set it to a non-empty list; that would restrict branch deploys to only
+   the listed branches and break the builds of the other version subdomains. Only if
+   `getSite` showed an already non-empty list, preserve that list (with `OLD_BRANCH`
+   included) instead of `[]`.
+3. Verify with `getSite` that BOTH values are correct: `build_settings.repo_branch` is now
+   `NEW_BRANCH` AND `build_settings.allowed_branches` is still `[]` (or the preserved
+   non-empty list). Do not trust the updateSite response alone — a 200 does not mean the
+   change was applied.
 4. If the API does not work, tell the user to do it in the Netlify UI:
    Site configuration → Build & deploy → Continuous deployment → Branches and deploy contexts.
 
@@ -78,6 +90,11 @@ Releases a new version of https://www.komapper.org/ following the process descri
 2. Run `./gradlew archive`. This sets `archived_version = true`, `algolia_docsearch = false`,
    `offlineSearch = true`, uncomments the `latest` entry in the versions list, and moves
    `OLD_BRANCH` to its subdomain URL.
+
+   Note: version branches older than v7.0 carry a pre-automation `archive` task that does
+   NOT update the `[[params.versions]]` list — there, the uncomment-`latest` and
+   move-to-subdomain edits in `config.toml` must be made manually. This only matters when
+   re-archiving such an old branch.
 3. Review `git diff` (compare with the previous `Archive vX.Y` commit), then commit with
    message `Archive vX.Y` and push.
 4. `git checkout main`.
