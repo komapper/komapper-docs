@@ -1021,6 +1021,74 @@ order by
 */
 ```
 
+#### Using context parameters {#user-defined-expression-comparison-operator-context-parameter}
+
+If you are using Kotlin 2.4 or later, you can define operators using
+[context parameters](https://kotlinlang.org/docs/context-parameters.html)
+instead of the `extension` function.
+
+The `org.komapper.core.dsl.scope.FilterScope` interface exposes a `criteriaContext` property.
+By declaring a `context(scope: FilterScope<*>)` parameter on your operator function,
+you can add the SQL-generation logic to `scope.criteriaContext` directly.
+Because the implicit receiver inside a Where, Having, On, or When declaration is a `FilterScope`,
+the operator can be called without the `extension` wrapper.
+
+```kotlin
+context(scope: FilterScope<*>)
+infix fun <T : Any> ColumnExpression<T, String>.`~`(pattern: T?) {
+    if (pattern == null) return
+    val o1 = Operand.Column(this)
+    val o2 = Operand.Argument(this, pattern)
+    scope.criteriaContext.add {
+        visit(o1)
+        append(" ~ ")
+        visit(o2)
+    }
+}
+
+context(scope: FilterScope<*>)
+infix fun <T : Any> ColumnExpression<T, String>.`!~`(pattern: T?) {
+    if (pattern == null) return
+    val o1 = Operand.Column(this)
+    val o2 = Operand.Argument(this, pattern)
+    scope.criteriaContext.add {
+        visit(o1)
+        append(" !~ ")
+        visit(o2)
+    }
+}
+```
+
+The operators read exactly like the built-in ones at the call site, without the `extension` wrapper:
+
+```kotlin
+QueryDsl.from(e).where {
+    e.salary greaterEq BigDecimal(1000)
+    e.employeeName `~` "S"
+    e.employeeName `!~` "T"
+}.orderBy(e.employeeName)
+/*
+select 
+    t0_.EMPLOYEE_ID, 
+    t0_.EMPLOYEE_NO, 
+    t0_.EMPLOYEE_NAME, 
+    t0_.MANAGER_ID, 
+    t0_.HIREDATE, 
+    t0_.SALARY, 
+    t0_.DEPARTMENT_ID, 
+    t0_.ADDRESS_ID, 
+    t0_.VERSION 
+from 
+    EMPLOYEE as t0_ 
+where 
+    t0_.SALARY >= ?
+    t0_.EMPLOYEE_NAME ~ ?
+    t0_.EMPLOYEE_NAME !~ ?
+order by
+    t0_.EMPLOYEE_NAME
+*/
+```
+
 ### Custom column expressions {#user-defined-expression-column-expression}
 
 Define custom column expressions as Kotlin functions that return 
