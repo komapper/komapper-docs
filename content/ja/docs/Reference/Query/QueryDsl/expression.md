@@ -1014,6 +1014,73 @@ order by
 */
 ```
 
+#### コンテキストパラメータを使う {#user-defined-expression-comparison-operator-context-parameter}
+
+Kotlin 2.4以降を使っている場合は、`extension`関数の代わりに
+[コンテキストパラメータ](https://kotlinlang.org/docs/context-parameters.html)を使って演算子を定義できます。
+
+`org.komapper.core.dsl.scope.FilterScope`インタフェースは`criteriaContext`プロパティを公開しています。
+演算子の関数に`context(scope: FilterScope<*>)`パラメータを宣言することで、
+SQLを生成する処理を`scope.criteriaContext`へ直接`add`できます。
+WhereやHaving、On、Whenの宣言の中の暗黙のレシーバーは`FilterScope`であるため、
+`extension`によるラッパーなしで演算子を呼び出せます。
+
+```kotlin
+context(scope: FilterScope<*>)
+infix fun <T : Any> ColumnExpression<T, String>.`~`(pattern: T?) {
+    if (pattern == null) return
+    val o1 = Operand.Column(this)
+    val o2 = Operand.Argument(this, pattern)
+    scope.criteriaContext.add {
+        visit(o1)
+        append(" ~ ")
+        visit(o2)
+    }
+}
+
+context(scope: FilterScope<*>)
+infix fun <T : Any> ColumnExpression<T, String>.`!~`(pattern: T?) {
+    if (pattern == null) return
+    val o1 = Operand.Column(this)
+    val o2 = Operand.Argument(this, pattern)
+    scope.criteriaContext.add {
+        visit(o1)
+        append(" !~ ")
+        visit(o2)
+    }
+}
+```
+
+演算子は、`extension`によるラッパーなしで、組み込みの演算子とまったく同じように呼び出せます。
+
+```kotlin
+QueryDsl.from(e).where {
+    e.salary greaterEq BigDecimal(1000)
+    e.employeeName `~` "S"
+    e.employeeName `!~` "T"
+}.orderBy(e.employeeName)
+/*
+select 
+    t0_.EMPLOYEE_ID, 
+    t0_.EMPLOYEE_NO, 
+    t0_.EMPLOYEE_NAME, 
+    t0_.MANAGER_ID, 
+    t0_.HIREDATE, 
+    t0_.SALARY, 
+    t0_.DEPARTMENT_ID, 
+    t0_.ADDRESS_ID, 
+    t0_.VERSION 
+from 
+    EMPLOYEE as t0_ 
+where 
+    t0_.SALARY >= ?
+    t0_.EMPLOYEE_NAME ~ ?
+    t0_.EMPLOYEE_NAME !~ ?
+order by
+    t0_.EMPLOYEE_NAME
+*/
+```
+
 ### 独自のカラム式 {#user-defined-expression-column-expression}
 
 独自のカラム式（例えば文字列関数など）は、`org.komapper.core.dsl.expression.ColumnExpression`を返す関数として定義します。
