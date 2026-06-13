@@ -14,7 +14,7 @@ Komapperを利用するには以下の環境が必要です。
 
 - Kotlin 2.3.21 以上
 - JRE 17 以上
-- Gradle 7.6.4 以上
+- Gradle 8.2 以上
 
 Komapperにはいくつかの強みがあります。
 
