@@ -14,7 +14,7 @@ To use Komapper, the following prerequisites must be met:
 
 - Kotlin 2.3.21 or later
 - JRE 17 or later
-- Gradle 7.6.4 or later
+- Gradle 8.2 or later
 
 Komapper has several strengths as follows:
 

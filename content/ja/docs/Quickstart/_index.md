@@ -22,7 +22,7 @@ H2 Database EngineにJDBCで接続するアプリケーションを作成しま�
 ## 必要要件 {#prerequisites}
 
 - JDK 17、もしくはそれ以降のバージョン
-- Gradle 7.6.4、もしくはそれ以降のバージョン
+- Gradle 8.2、もしくはそれ以降のバージョン
 
 ## インストール {#install}
 

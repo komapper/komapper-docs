@@ -23,7 +23,7 @@ so you do not need to install or start a database server.
 ## Prerequisites {#prerequisites}
 
 - JDK 17 or later
-- Gradle 7.6.4 or later
+- Gradle 8.2 or later
 
 ## Install {#install}
 
